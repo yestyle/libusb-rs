@@ -162,6 +162,14 @@ impl Version {
         Version(major, minor, sub_minor)
     }
 
+    pub fn to_bcd(&self) -> u16 {
+        let mut bcd: u16 = (self.major() as u16 / 10) << 12;
+        bcd |= (self.major() as u16 % 10) << 8;
+        bcd |= (self.minor() as u16) << 4;
+        bcd |= self.sub_minor() as u16;
+        bcd
+    }
+
     /// Returns the major version.
     pub fn major(&self) -> u8 {
         let Version(major, _, _) = *self;
@@ -269,6 +277,34 @@ mod test {
     #[test]
     fn version_parses_full_version() {
         assert_eq!(Version(12, 3, 4), Version::from_bcd(0x1234));
+    }
+
+    #[test]
+    fn version_converts_major_version() {
+        assert_eq!(0x0100, Version(1, 0, 0).to_bcd());
+        assert_eq!(0x0200, Version(2, 0, 0).to_bcd());
+    }
+
+    #[test]
+    fn version_converts_long_major_version() {
+        assert_eq!(0x1200, Version(12, 0, 0).to_bcd());
+    }
+
+    #[test]
+    fn version_converts_minor_version() {
+        assert_eq!(0x0010, Version(0, 1, 0).to_bcd());
+        assert_eq!(0x0020, Version(0, 2, 0).to_bcd());
+    }
+
+    #[test]
+    fn version_converts_sub_minor_version() {
+        assert_eq!(0x0001, Version(0, 0, 1).to_bcd());
+        assert_eq!(0x0002, Version(0, 0, 2).to_bcd());
+    }
+
+    #[test]
+    fn version_converts_full_version() {
+        assert_eq!(0x1234, Version(12, 3, 4).to_bcd());
     }
 
     // request_type for direction
