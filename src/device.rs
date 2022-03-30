@@ -64,6 +64,11 @@ impl<'a> Device<'a> {
         }
     }
 
+    /// Returns the port number that the device is connected to.
+    pub fn port_number(&self) -> u8 {
+        unsafe { libusb_get_port_number(self.device) }
+    }
+
     /// Returns the device's address on the bus that it's connected to.
     pub fn address(&self) -> u8 {
         unsafe {
